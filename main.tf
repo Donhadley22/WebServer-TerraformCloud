@@ -1,13 +1,13 @@
 # Terraform configuration file for AWS infrastructure setup
-terraform { 
-  cloud { 
-    
-    organization = "GitHub-Actions-2420" 
+terraform {
+  cloud {
 
-    workspaces { 
-      name = "aws-infra-workspace" 
-    } 
-  } 
+    organization = "GitHub-Actions-2420"
+
+    workspaces {
+      name = "aws-infra-workspace"
+    }
+  }
 }
 
 provider "aws" {
