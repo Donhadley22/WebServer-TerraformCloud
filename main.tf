@@ -1,14 +1,14 @@
 # Terraform configuration file for AWS infrastructure setup
-terraform {
-  cloud {
-    organization = "Donhadley-DevOps-Training"
+terraform { 
+  cloud { 
+    
+    organization = "GitHub-Actions-2420" 
 
-    workspaces {
-      name = "aws-infra-workspace"
-    }
-  }
+    workspaces { 
+      name = "aws-infra-workspace" 
+    } 
+  } 
 }
-
 
 provider "aws" {
   region = var.aws_region
