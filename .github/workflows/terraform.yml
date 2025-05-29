@@ -24,7 +24,7 @@ jobs:
       TF_LOG: INFO
       TF_CLOUD_ORGANIZATION: Donhadley-DevOps-Training
       TF_WORKSPACE: aws-infra-workspace
-      CONFIG_DIRECTORY: ./WebServer-TerraformCloud
+      CONFIG_DIRECTORY: .
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
 
     defaults:
