@@ -71,14 +71,14 @@ jobs:
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Wait for Plan Completion (Pull Request)
+      - name: Wait for Plan Completion (PR only)
         if: github.event_name == 'pull_request'
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
         with:
           token: ${{ secrets.TF_API_TOKEN }}
           plan: ${{ fromJSON(steps.run.outputs.payload).data.relationships.plan.data.id }}
 
-      - name: Apply Run in Terraform Cloud
+      - name: Apply Run in Terraform Cloud (Main only)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
         with:
