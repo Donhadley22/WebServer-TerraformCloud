@@ -1,0 +1,78 @@
+name: Terraform CI/CD with Terraform Cloud
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - '**.tfvars'
+
+env:
+  AWS_REGION: us-east-1
+  TF_LOG: INFO
+  TF_CLOUD_ORGANIZATION: Donhadley-DevOps-Training
+  TF_WORKSPACE: aws-infra-workspace
+  CONFIG_DIRECTORY: WebServer-TerraformCloud
+
+jobs:
+  terraform:
+    name: Terraform Workflow
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.CONFIG_DIRECTORY }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
+          cli_config_credentials_token: ${{ secrets.TERRAFORM_TOKEN }}
+
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload Configuration to Terraform Cloud
+        uses: hashicorp/tfc-workflows-github/actions/upload-configuration@v1.0.0
+        id: upload
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          directory: ${{ env.CONFIG_DIRECTORY }}
+          speculative: ${{ github.event_name == 'pull_request' }}
+
+      - name: Create Run in Terraform Cloud
+        uses: hashicorp/tfc-workflows-github/actions/create-run@v1.0.0
+        id: run
+        with:
+          workspace: ${{ env.TF_WORKSPACE }}
+          configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
+          plan_only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Wait for Plan Completion
+        if: github.event_name == 'pull_request'
+        uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
+        id: plan
+        with:
+          plan: ${{ fromJSON(steps.run.outputs.payload).data.relationships.plan.data.id }}
+
+      - name: Apply Run in Terraform Cloud
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: hashicorp/tfc-workflows-github/actions/apply-run@v1.0.0
+        with:
+          run: ${{ steps.run.outputs.run_id }}
+
