@@ -19,7 +19,7 @@ env:
   TF_LOG: INFO
   TF_CLOUD_ORGANIZATION: Donhadley-DevOps-Training
   TF_WORKSPACE: aws-infra-workspace
-  CONFIG_DIRECTORY: WebServer-TerraformCloud
+  CONFIG_DIRECTORY: .
 
 jobs:
   terraform:
