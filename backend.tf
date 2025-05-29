@@ -1,9 +1,9 @@
-terraform { 
-  cloud { 
-    organization = "Donhadley-DevOps-Training" 
+terraform {
+  cloud {
+    organization = "Donhadley-DevOps-Training"
 
-    workspaces { 
-      name = "aws-infra-workspace" 
-    } 
-  } 
+    workspaces {
+      name = "aws-infra-workspace"
+    }
+  }
 }
