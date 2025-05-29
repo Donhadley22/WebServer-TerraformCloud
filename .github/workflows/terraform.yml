@@ -14,18 +14,19 @@ on:
       - '**.tf'
       - '**.tfvars'
 
-env:
-  AWS_REGION: us-east-1
-  TF_LOG: INFO
-  TF_CLOUD_ORGANIZATION: Donhadley-DevOps-Training
-  TF_WORKSPACE: aws-infra-workspace
-  CONFIG_DIRECTORY: .
-  TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
-
 jobs:
   terraform:
     name: Terraform Workflow
     runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-1
+      TF_LOG: INFO
+      TF_CLOUD_ORGANIZATION: Donhadley-DevOps-Training
+      TF_WORKSPACE: aws-infra-workspace
+      CONFIG_DIRECTORY: ./WebServer-TerraformCloud
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
+
     defaults:
       run:
         working-directory: ${{ env.CONFIG_DIRECTORY }}
@@ -49,7 +50,7 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check
 
-      - name: Optional Local Init (for early feedback)
+      - name: Terraform Init
         run: terraform init
 
       - name: Upload Configuration to Terraform Cloud
@@ -70,10 +71,9 @@ jobs:
           configuration_version: ${{ steps.upload.outputs.configuration_version_id }}
           plan_only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Wait for Plan Completion
+      - name: Wait for Plan Completion (Pull Request)
         if: github.event_name == 'pull_request'
         uses: hashicorp/tfc-workflows-github/actions/plan-output@v1.0.0
-        id: plan
         with:
           token: ${{ secrets.TF_API_TOKEN }}
           plan: ${{ fromJSON(steps.run.outputs.payload).data.relationships.plan.data.id }}
