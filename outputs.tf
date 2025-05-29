@@ -18,3 +18,7 @@ output "ec2_instance_state" {
 output "ec2_instance_tags" {
   value = module.ec2.instance_tags
 }
+
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
