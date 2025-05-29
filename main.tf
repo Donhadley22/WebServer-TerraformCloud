@@ -1,3 +1,5 @@
+# Terraform configuration file for AWS infrastructure setup
+
 provider "aws" {
   region = var.aws_region
 }
